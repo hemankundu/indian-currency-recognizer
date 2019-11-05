@@ -131,12 +131,13 @@ open (drive_path + "dataset_plain/" + model_name + "_full.tflite" , "wb").write(
 # 2. Work on Raspberry Pi
 ## 2.1 Requirements
 - [OpenCV](https://opencv.org/) (For capturing, processing and manipulating images)
-- [tflite-runtime](https://www.tensorflow.org/lite/guide/build_rpi) (Build or use pre-compiled package)
+- [tflite-runtime](https://www.tensorflow.org/lite/guide/build_rpi) (Build or use pre-compiled package for Raspberry Pi)
 - [NumPy](https://pypi.org/project/numpy/)
 - [espeak](https://www.dexterindustries.com/howto/make-your-raspberry-pi-speak/) (To convert text or strings into spoken words)
 ## 2.2 Directory Structure and purpose
 - `captured` this directory contains images captured by the camera 
 - `preprocessed` this directory contains cropped currency images
+- `models` this directory contains trained `.tflite` models. `model_name` can be changed in `config.json`
 - `config.json` contains configurations 
 - `requrements.txt` has list of required packages
 - `test.py` main program which handles all sub tasks like capturing image, processing image, predicting, and provide audio output
