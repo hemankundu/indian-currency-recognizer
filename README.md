@@ -133,4 +133,24 @@ open (drive_path + "dataset_plain/" + model_name + "_full.tflite" , "wb").write(
 - [OpenCV](https://opencv.org/) (For capturing, processing and manipulating images)
 - [tflite-runtime](https://www.tensorflow.org/lite/guide/build_rpi) (Build or use pre-compiled package)
 - [NumPy](https://pypi.org/project/numpy/)
-
+- [espeak](https://www.dexterindustries.com/howto/make-your-raspberry-pi-speak/) (To convert text or strings into spoken words)
+## 2.2 Directory Structure and purpose
+- `captured` this directory contains images captured by the camera 
+- `preprocessed` this directory contains cropped currency images
+- `config.json` contains configurations 
+- `requrements.txt` has list of required packages
+- `test.py` main program which handles all sub tasks like capturing image, processing image, predicting, and provide audio output
+- `capture.py` handles image  capturing task
+- `preprocess.py` cropping the currency from captured image and other adjustments
+- `speak.py` handles audio output
+## 2.3 Setup
+- Install required packages (Using virtual env recommended see [here](https://www.geeksforgeeks.org/python-virtual-environment/))
+	```bash
+	pip3 install --user --requirement requirements.txt
+	```
+- Edit configuration file if necessary ( `config.json` )
+- Run `test.py`
+	
+  ```Bash
+	python3 test.py
+	```
