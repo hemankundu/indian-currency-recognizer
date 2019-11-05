@@ -1,0 +1,10 @@
+{
+    "capture_enabled" : true,
+    "display_enabled" : false,
+    "speaker_enabled" : true,
+    "preprocess_enabled" : true,
+    "capture_count" : 5,
+    "capture_delay" : 1,
+    "camera_device_str" : "http://192.168.12.217:4747/video",
+    "model_name": "cnn_l2_5_full"
+}

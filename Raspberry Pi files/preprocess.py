@@ -1,6 +1,6 @@
 import cv2
 from os.path import basename
-import os.listdir
+from os import listdir
 #import numpy as np
 #from glob import glob
 
@@ -66,7 +66,7 @@ def process_image(src_path, dst_path,fname):
         cv2.imwrite(dst_path + fname, cropped)
 
 def preprocess_captured():
-    for f in os.listdir('captured/'):
+    for f in listdir('captured/'):
         process_image("captured/", "preprocessed/", f)
 
 # def is_object_present(img_path):

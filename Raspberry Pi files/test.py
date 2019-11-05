@@ -1,10 +1,14 @@
 import tensorflow as tf
-import numpy.expand_dims, np.array
+from numpy import expand_dims, array, float32
 #from tensorflow.keras.preprocessing import image
 #import importlib
-import os.listdir
+from os import listdir
 import cv2
 import capture, preprocess
+import json
+
+with open('config.json') as config_file:
+    config = json.load(config_file)
 
 # capture = getattr(importlib.import_module("capture"), "capture")
 # init_cam = getattr(importlib.import_module("capture"), "init_cam")
@@ -12,9 +16,13 @@ import capture, preprocess
 # preprocess_captured = getattr(importlib.import_module("preprocess"), "preprocess_captured")
 #is_object_present = getattr(importlib.import_module("preprocess"), "is_object_present")
 
-cam = capture.init_cam()
+if config['capture_enabled']:
+	cam = capture.init_cam(config["camera_device_str"])
+	if cam == None:
+		print("Error opening camera. Exiting.. ")
+		exit
 
-model_name = "cnn_l2_5_full"
+model_name = config["model_name"]
 classes = {0: 'fifty_2',
             1: 'five',
             2: 'fivehundred_2',
@@ -41,19 +49,22 @@ while True:
 	if t=='n' or t=='N' or t=='':
 		pass
 	else:
-		capture.release_cam(cam)
+		if config['capture_enabled']:
+			capture.release_cam(cam)
 		break
-	
-	capture.capture(cam)
-	preprocess.preprocess_captured()
+	if config['capture_enabled']:
+		capture.capture(cam, display_enabled = config["display_enabled"], 
+		capture_count = config["capture_count"], capture_delay = config["capture_delay"])
+	if config['preprocess_enabled']:
+		preprocess.preprocess_captured()
 
-	for f in os.listdir("preprocessed/"):
+	for f in listdir("preprocessed/"):
 		#img = image.load_img("preprocessed/" + f, target_size=tuple(input_shape[1:3]))
 		img = cv2.imread("preprocessed/" + f) 
 		img = cv2.resize(img, tuple(input_shape[1:3]))
-		input_data = np.array(img, dtype=np.float32)
+		input_data = array(img, dtype=float32)
 		input_data /= 255.
-		input_data = np.expand_dims(input_data, axis=0)
+		input_data = expand_dims(input_data, axis=0)
 		interpreter.set_tensor(input_details[0]['index'], input_data)
 
 		interpreter.invoke()
