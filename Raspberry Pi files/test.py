@@ -1,10 +1,11 @@
-import tensorflow as tf
+#import tensorflow as tf
+from tflite_runtime.interpreter import Interpreter
 from numpy import expand_dims, array, float32
 #from tensorflow.keras.preprocessing import image
 #import importlib
 from os import listdir
 import cv2
-import capture, preprocess
+import capture, preprocess, speak
 import json
 
 with open('config.json') as config_file:
@@ -20,6 +21,8 @@ if config['capture_enabled']:
 	cam = capture.init_cam(config["camera_device_str"])
 	if cam == None:
 		print("Error opening camera. Exiting.. ")
+		if config["speaker_enabled"]:
+			speak.speak("Error opening camera. Exiting.. ")
 		exit
 
 model_name = config["model_name"]
@@ -33,7 +36,7 @@ classes = {0: 'fifty_2',
             7: 'twohundred',
             8: 'twothousand'}
 # Load TFLite model and allocate tensors.
-interpreter = tf.lite.Interpreter(model_path=model_name + ".tflite")
+interpreter = Interpreter(model_path="models/" + model_name + ".tflite")
 interpreter.allocate_tensors()
 
 # Get input and output tensors.
@@ -53,11 +56,13 @@ while True:
 			capture.release_cam(cam)
 		break
 	if config['capture_enabled']:
-		capture.capture(cam, display_enabled = config["display_enabled"], 
+		capture.capture(cam, display_enabled = config["display_enabled"], speaker_enabled=config["speaker_enabled"],
 		capture_count = config["capture_count"], capture_delay = config["capture_delay"])
 	if config['preprocess_enabled']:
 		preprocess.preprocess_captured()
 
+	major_class_list = [0 for _ in range(len(classes))]
+	major_conf_list = [0 for _ in range(len(classes))]
 	for f in listdir("preprocessed/"):
 		#img = image.load_img("preprocessed/" + f, target_size=tuple(input_shape[1:3]))
 		img = cv2.imread("preprocessed/" + f) 
@@ -78,5 +83,17 @@ while True:
 			if (output_data[i] > output_data[bestclass]):
 				bestclass = i
 		print(classes[bestclass], "Confidence : %.2f" % output_data[bestclass])
+		major_class_list[bestclass] += 1
+		major_conf_list += output_data
+	
+	major_class = major_class_list.index(max(major_class_list))
+	major_conf = major_conf_list[major_class] / major_class_list[major_class]
+	major_class = list(classes[major_class].split('_'))
+	if len(major_class) > 0:
+		major_class = major_class[0] + " type " + major_class[1]
+	else:
+		major_class = major_class[0]
+	if config["speaker_enabled"]:
+			speak.speak_currency(major_class, round(major_conf, 2)*100)
 		#os.remove("input/"+f)
 

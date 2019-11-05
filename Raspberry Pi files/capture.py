@@ -1,6 +1,7 @@
 import cv2
 from os import listdir, remove
 import time
+import speak
 
 def init_cam(camera_device_str = "0"):
     if len(camera_device_str) <= 3:
@@ -15,7 +16,7 @@ def init_cam(camera_device_str = "0"):
 def release_cam(cam):
     cam.release()
 
-def capture(cam, display_enabled = False, capture_count = 5, capture_delay = 0.5):
+def capture(cam, display_enabled = False, capture_count = 5, capture_delay = 0.5, speaker_enabled = False):
     
     if len(listdir("captured/")) > 0:
         t = input("Captured directory is not empty. Use that or capture new? [Y/n]: ")
@@ -30,6 +31,9 @@ def capture(cam, display_enabled = False, capture_count = 5, capture_delay = 0.5
     c = 0
     if not display_enabled:
         print("Starting to auto capture " + str(capture_count) + " images with " + str(capture_delay) + " sec delay")
+        if speaker_enabled:
+            speak.speak("Starting to auto capture " + str(capture_count) + " images with " 
+            + str(capture_delay) + " sec delay")
     while True:
         ret, frame = cam.read()
         if not ret:
@@ -50,6 +54,9 @@ def capture(cam, display_enabled = False, capture_count = 5, capture_delay = 0.5
             c += 1
             time.sleep(capture_delay)
             if c >= capture_count:
+                print("Capture complete")
+                if speaker_enabled:
+                    speak.speak("Capture complete")
                 break
 
     cv2.destroyAllWindows()
